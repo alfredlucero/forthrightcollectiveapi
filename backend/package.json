@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "forthrightcollective backend API",
   "main": "index.js",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node ./dist/server.js",
@@ -10,7 +13,7 @@
     "dev": "cross-env NODE_ENV=development CONFIG_ENV=dev nodemon",
     "staging": "cross-env NODE_ENV=development CONFIG_ENV=staging nodemon",
     "production": "cross-env NODE_ENV=development CONFIG_ENV=production npm run build && nodemon",
-    "test": "jest --passWithNoTests",
+    "test": "jest",
     "lint": "tsc --noEmit && eslint --fix './src/**/*.{js,ts}'",
     "precommit": "tsc --noEmit && lint-staged"
   },
