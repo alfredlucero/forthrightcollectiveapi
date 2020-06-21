@@ -10,6 +10,7 @@ import helmet from "helmet";
 // Prevent DDOS attacks on endpoints by adding rate limits to them
 import rateLimit from "express-rate-limit";
 // Routes
+import BooksRoutes from "./samplebooks/books.routes"; // For demo purposes only
 import AuthRoutes from "./auth/auth.routes";
 
 const App = express();
@@ -18,7 +19,7 @@ export const initializeMiddlewares = (app: Express): void => {
   // Support application/json type post data
   app.use(bodyParser.json());
   // Support application/x-www-form-urlencoded post data
-  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.urlencoded({ extended: true }));
 
   // TODO: set proper CORS for production NODE_ENV
   // By default, sets Access-Control-Allow-Origin to *
@@ -45,6 +46,11 @@ export const initializeMiddlewares = (app: Express): void => {
 };
 
 const initializeRoutes = (app: Express) => {
+  // Sample Books Routes for CRUD example
+  if (process.env.NODE_ENV !== "production") {
+    app.use(BooksRoutes.path, BooksRoutes.initializeRoutes());
+  }
+
   // /auth routes
   app.use(AuthRoutes.path, AuthRoutes.initializeRoutes());
 
