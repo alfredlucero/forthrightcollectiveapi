@@ -39,40 +39,268 @@ CREATE TABLE collective_news (
 -- Anonymous diversity metrics across companies for data analysis
 -- As a user, I would like to see general stats about how collectives in general are doing in relation to diversity
 -- As a collective, I would like to anonymously see how my collective is doing compared to others and where we can improve
--- Gender/Sexual Orientiation Survey Questions: https://www.hrc.org/resources/collecting-transgender-inclusive-gender-data-in-workplace-and-other-surveys
--- Race/Ethnicity Survey Questions: https://ir.aa.ufl.edu/surveys/race-and-ethnicity-survey/
--- Leadership breakdown how to tackle this and possibly split diversity metrics into multiple tables?
--- i.e. founders/ceo metrics, executive leadership team breakdown, management breakdown
-CREATE TABLE diversity_metrics (
+
+-- Age Groups (16-19, 20-24, 25-34, 35-44, 45-54, 55-64, 65+)?
+-- https://www.bls.gov/cps/cpsaat11b.htm
+CREATE TABLE diversity_age_metrics (
   id SERIAL PRIMARY KEY,
-  gender_female_count INTEGER NOT NULL,
-  gender_male_count INTEGER NOT NULL,
-  gender_nonbinary_count INTEGER NOT NULL,
-  gender_selfdescribe_count INTEGER NOT NULL,
-  gender_private_count INTEGER NOT NULL,
-  transgender_count INTEGER NOT NULL,
-  so_heterosexual_count INTEGER NOT NULL,
-  so_gay_count INTEGER NOT NULL,
-  so_bisexual_count INTEGER NOT NULL,
-  so_selfdescribe_count INTEGER NOT NULL,
-  so_private_count INTEGER NOT NULL,
-  re_hispanic_latinx_spanish_count INTEGER NOT NULL,
-  re_american_indian_alaskan_count INTEGER NOT NULL,
-  re_asian_count INTEGER NOT NULL,
-  re_hawaii_pacific_islander_count INTEGER NOT NULL,
-  re_black_african_american_count INTEGER NOT NULL,
-  re_white_count INTEGER NOT NULL,
-  re_multiple_races_count INTEGER NOT NULL,
-  re_other_count INTEGER NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW(),
-  last_updated_at TIMESTAMP DEFAULT NOW(),
+  sixteen_to_nineteen_count INTEGER NOT NULL,
+  twenty_to_twentyfour_count INTEGER NOT NULL,
+  twentyfive_to_thirtyfour_count INTEGER NOT NULL,
+  thirtyfive_to_fortyfour_count INTEGER NOT NULL,
+  fortyfive_to_fiftyfour_count INTEGER NOT NULL,
+  fiftyfive_to_sixtyfour_count INTEGER NOT NULL
 );
 
--- Diversity for a collective by the numbers
--- As a collective, I would like to be transparent about how we're doing with diversity and what sort of goals
-CREATE TABLE collective_diversity_metrics (
+CREATE TABLE collective_diversity_age_metrics (
+
+);
+
+-- Education (less than high school diploma, high school only, some college or associate degree, bachelor's degree and higher)
+-- https://www.bls.gov/webapps/legacy/cpsatab4.htm
+CREATE TABLE diversity_education_metrics (
+
+);
+
+CREATE TABLE collective_diversity_education_metrics (
+
+);
+
+-- Marital/Families Status (Single without kids, Single with Kids, Married without kids, Married with Kids)
+CREATE TABLE diversity_marital_families_metrics (
+
+);
+
+CREATE TABLE collective_diversity_marital_families_metrics (
+
+);
+
+-- Veterans vs Not Veterans
+CREATE TABLE diversity_veterans_metrics (
+  id SERIAL PRIMARY KEY,
+  veterans_count INTEGER NOT NULL,
+  nonveterans_count INTEGER NOT NULL,
+);
+
+CREATE TABLE collective_diversity_veterans_metrics (
   collective_id INTEGER NOT NULL,
-  diversity_metrics_id INTEGER NOT NULL,
+  metrics_id INTEGER NOT NULL,
+);
+
+-- Disabled vs. Not Disabled
+CREATE TABLE diversity_disabled_metrics (
+  id SERIAL PRIMARY KEY,
+  disabled_count INTEGER NOT NULL,
+  nondisabled_count INTEGER NOT NULL,
+);
+
+CREATE TABLE collective_diversity_disabled_metrics (
+  collective_id INTEGER NOT NULL,
+  metrics_id INTEGER NOT NULL,
+);
+
+-- Foreign born vs. native born
+-- https://www.bls.gov/webapps/legacy/cpsatab7.htm
+CREATE TABLE diversity_foreign_worker_metrics (
+
+);
+
+CREATE TABLE collective_diversity_foreign_worker_metrics (
+
+);
+
+-- Salary? Breakdown between men and women in similar roles
+-- Individual contributor/non-management, management, elt
+CREATE TABLE diversity_salary_metrics (
+
+);
+
+-- As a user, I would like to see how collectives are doing with respect to gender 
+-- Race/Ethnicity Survey Questions: https://ir.aa.ufl.edu/surveys/race-and-ethnicity-survey/
+CREATE TABLE diversity_gender_metrics (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT NOW(),
+  last_updated_at TIMESTAMP DEFAULT NOW(),
+  female_count INTEGER NOT NULL,
+  male_count INTEGER NOT NULL,
+  nonbinary_count INTEGER NOT NULL,
+  selfdescribe_count INTEGER NOT NULL,
+  private_count INTEGER NOT NULL,
+  transgender_count INTEGER NOT NULL,
+);
+
+-- As a collective, I would like to self-report and be transparent about our gender breakdowns
+CREATE TABLE collective_diversity_gender_metrics (
+  collective_id INTEGER NOT NULL,
+  metrics_id INTEGER NOT NULL,
+  FOREIGN KEY (collective_id) REFERENCES collectives(id),
+  FOREIGN KEY (metrics_id) REFERENCES diversity_gender_metrics(id),
+  PRIMARY KEY (collective_id, metrics_id)
+);
+
+-- As a user, I would like to see how collectives are doing with respect to sexual orientation
+-- Gender/Sexual Orientiation Survey Questions: https://www.hrc.org/resources/collecting-transgender-inclusive-gender-data-in-workplace-and-other-surveys
+CREATE TABLE diversity_sexual_orientation_metrics (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT NOW(),
+  last_updated_at TIMESTAMP DEFAULT NOW(),
+  heterosexual_count INTEGER NOT NULL,
+  gay_count INTEGER NOT NULL,
+  bisexual_count INTEGER NOT NULL,
+  selfdescribe_count INTEGER NOT NULL,
+  private_count INTEGER NOT NULL,
+);
+
+-- As a collective, I would like to self-report and be transparent about our gender breakdowns
+CREATE TABLE collective_diversity_sexual_orientation_metrics (
+  collective_id INTEGER NOT NULL,
+  metrics_id INTEGER NOT NULL,
+  FOREIGN KEY (collective_id) REFERENCES collectives(id),
+  FOREIGN KEY (metrics_id) REFERENCES diversity_sexual_orientation_metrics(id),
+  PRIMARY KEY (collective_id, metrics_id)
+);
+
+-- As a user, I would like to see how collectives are doing with respect to race and ethnicity
+CREATE TABLE diversity_race_ethnicity_metrics (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT NOW(),
+  last_updated_at TIMESTAMP DEFAULT NOW(),
+  hispanic_latinx_spanish_count INTEGER NOT NULL,
+  american_indian_alaskan_count INTEGER NOT NULL,
+  asian_count INTEGER NOT NULL,
+  hawaii_pacific_islander_count INTEGER NOT NULL,
+  black_african_american_count INTEGER NOT NULL,
+  white_count INTEGER NOT NULL,
+  multiple_races_count INTEGER NOT NULL,
+  other_count INTEGER NOT NULL,
+);
+
+-- As a collective, I would like to self-report how we're doing with respect to race and ethnicity
+CREATE TABLE collective_diversity_race_ethnicity_metrics (
+  collective_id INTEGER NOT NULL,
+  metrics_id INTEGER NOT NULL,
+  FOREIGN KEY (collective_id) REFERENCES collectives(id),
+  FOREIGN KEY (metrics_id) REFERENCES diversity_race_ethnicity_metrics(id),
+  PRIMARY KEY (collective_id, metrics_id)
+);
+
+-- As a user, I would like to see how collectives are doing with respect to gender
+CREATE TABLE diversity_elt_gender_metrics (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT NOW(),
+  last_updated_at TIMESTAMP DEFAULT NOW(),
+  female_count INTEGER NOT NULL,
+  male_count INTEGER NOT NULL,
+  nonbinary_count INTEGER NOT NULL,
+  selfdescribe_count INTEGER NOT NULL,
+  private_count INTEGER NOT NULL,
+  transgender_count INTEGER NOT NULL,
+);
+
+-- As a collective, I would like to self-report about how we're doing with respect to gender
+CREATE TABLE collective_diversity_elt_gender_metrics (
+  collective_id INTEGER NOT NULL,
+  metrics_id INTEGER NOT NULL,
+  FOREIGN KEY (collective_id) REFERENCES collectives(id),
+  FOREIGN KEY (metrics_id) REFERENCES diversity_elt_gender_metrics(id),
+  PRIMARY KEY (collective_id, metrics_id)
+);
+
+-- As a user, I would like to see how collectives' elt is doing with respect to race and ethnicity
+CREATE TABLE diversity_elt_race_ethnicity_metrics (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT NOW(),
+  last_updated_at TIMESTAMP DEFAULT NOW(),
+  hispanic_latinx_spanish_count INTEGER NOT NULL,
+  american_indian_alaskan_count INTEGER NOT NULL,
+  asian_count INTEGER NOT NULL,
+  hawaii_pacific_islander_count INTEGER NOT NULL,
+  black_african_american_count INTEGER NOT NULL,
+  white_count INTEGER NOT NULL,
+  multiple_races_count INTEGER NOT NULL,
+  other_count INTEGER NOT NULL,
+);
+
+-- As a collective, I would like to self-report our race and ethnicity in the elt
+CREATE TABLE collective_diversity_elt_race_ethnicity_metrics (
+  collective_id INTEGER NOT NULL,
+  metrics_id INTEGER NOT NULL,
+  FOREIGN KEY (collective_id) REFERENCES collectives(id),
+  FOREIGN KEY (metrics_id) REFERENCES diversity_elt_race_ethnicity_metrics(id),
+  PRIMARY KEY (collective_id, metrics_id)
+);
+
+-- As a user, I would like to see how collectives are doing with respect to gender in management
+CREATE TABLE diversity_management_gender_metrics (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT NOW(),
+  last_updated_at TIMESTAMP DEFAULT NOW(),
+  female_count INTEGER NOT NULL,
+  male_count INTEGER NOT NULL,
+  nonbinary_count INTEGER NOT NULL,
+  selfdescribe_count INTEGER NOT NULL,
+  private_count INTEGER NOT NULL,
+  transgender_count INTEGER NOT NULL,
+);
+
+-- As a collective, I would like to self-report our gender breakdown in management
+CREATE TABLE collective_diversity_management_gender_metrics (
+  collective_id INTEGER NOT NULL,
+  metrics_id INTEGER NOT NULL,
+  FOREIGN KEY (collective_id) REFERENCES collectives(id),
+  FOREIGN KEY (metrics_id) REFERENCES diversity_management_gender_metrics(id),
+  PRIMARY KEY (collective_id, metrics_id)
+);
+
+-- As a user, I would like to see how collectives are doing with respect to race/ethnicity in management roles
+CREATE TABLE diversity_management_race_ethnicity_metrics (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT NOW(),
+  last_updated_at TIMESTAMP DEFAULT NOW(),
+  hispanic_latinx_spanish_count INTEGER NOT NULL,
+  american_indian_alaskan_count INTEGER NOT NULL,
+  asian_count INTEGER NOT NULL,
+  hawaii_pacific_islander_count INTEGER NOT NULL,
+  black_african_american_count INTEGER NOT NULL,
+  white_count INTEGER NOT NULL,
+  multiple_races_count INTEGER NOT NULL,
+  other_count INTEGER NOT NULL,
+);
+
+-- As a collective, I would like to self-report how we're doing with respect to race and ethnicity in management
+CREATE TABLE collective_diversity_management_race_ethnicity_metrics (
+  collective_id INTEGER NOT NULL,
+  metrics_id INTEGER NOT NULL,
+  FOREIGN KEY (collective_id) REFERENCES collectives(id),
+  FOREIGN KEY (metrics_id) REFERENCES diversity_management_race_ethnicity_metrics(id),
+  PRIMARY KEY (collective_id, metrics_id)
+);
+
+-- Industries a collective/user is participating in
+-- Tech, Medical, Education, Finance, Entertainment, etc.
+-- I want to find collectives that are in a certain industry or match up with the industry I am in
+CREATE TABLE industries (
+  id SERIAL PRIMARY KEY,
+  industry_name VARCHAR(255) UNIQUE NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+);
+
+-- Collectives report what industries they participate in
+CREATE TABLE collective_industries (
+  industry_id INTEGER NOT NULL,
+  collective_id INTEGER NOT NULL,
+  FOREIGN KEY (industry_id) REFERENCES industries(id),
+  FOREIGN KEY (collective_id) REFERENCES collectives(id),
+  PRIMARY KEY (industry_id, collective_id)
+);
+
+-- Users report what industries they participate in 
+CREATE TABLE user_industries (
+  industry_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  FOREIGN KEY (industry_id) REFERENCES industries(id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  PRIMARY KEY (industry_id, collective_id)
 );
 
 -- Causes supported by a collective 
