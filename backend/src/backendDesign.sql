@@ -4,6 +4,31 @@
 
 -- Certified B Corp? B lab, verified social/environmental performance, public transparency, business as a force for good
 
+-- Auth0 Roles
+-- Users (base shared by all types of user roles)
+
+-- Businesses
+--  Scopes:
+--    businesses:read
+--    businesses:create
+--    businesses:update
+--    businesses:delete
+
+-- Moderators
+--  Scopes:
+--    businesses:read
+--    moderators:read
+--    moderators:update
+--    moderators:create
+--    moderators:delete
+
+-- Admins
+--  Scopes:
+--    admins:read
+--    admins:create
+--    admins:update
+--    admins:delete
+
 -- User signup/login/other auth things handled through Auth0, but we need our own 
 -- forthright users table to distinguish between normal users and businesses i.e. local businesses, communities, stores
 -- These forthrightusers will then serve as the main reference to the other tables
@@ -109,68 +134,16 @@ CREATE TABLE business_news (
 -- Base /diversity_metrics endpoint to filter across all the diversity metrics tables/endpoints
 -- GET /businesses/:businessId/diversity_metrics -> retrieves all the diversity metrics for a certain business id
 
--- Age Groups (16-19, 20-24, 25-34, 35-44, 45-54, 55-64, 65+)?
--- https://www.bls.gov/cps/cpsaat11b.htm
--- As a user, I would like to see how businesses hire based on age
--- As a business, I would like to self-report how we're doing with respect to age
--- GET /businesses/:businessId/diversity_metrics/ages - get diversity age metrics for a certain business id
--- POST /businesses/:businessId/diversity_metrics/ages - create diversity age metrics for a certain business id
--- PUT /businesses/:businessId/diversity_metrics/ages/:metricId - update diversity age metrics for a certain business id
--- DELETE /businesses/:businessId/diversity_metrics/ages/:metricId - delete diversity age metrics for a certain business id
-CREATE TABLE diversity_age_metrics (
-  id SERIAL PRIMARY KEY,
-  business_id INTEGER NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  last_updated_at TIMESTAMP DEFAULT NOW(),
-  sixteen_to_nineteen_count INTEGER NOT NULL,
-  twenty_to_twentyfour_count INTEGER NOT NULL,
-  twentyfive_to_thirtyfour_count INTEGER NOT NULL,
-  thirtyfive_to_fortyfour_count INTEGER NOT NULL,
-  fortyfive_to_fiftyfour_count INTEGER NOT NULL,
-  fiftyfive_to_sixtyfour_count INTEGER NOT NULL,
-  FOREIGN KEY (business_id) REFERENCES businesses(id)
-);
-
--- Education (less than high school diploma, high school only, some college or associate degree, bachelor's degree and higher)
--- https://www.bls.gov/webapps/legacy/cpsatab4.htm
--- As a user, I would like to see how businesses hire based on education
--- As a business, I would like to self-report our employees' educational background
--- GET /businesses/:businessId/diversity_metrics/educational_backgrounds - get diversity educational background metrics for a certain business id
--- POST /businesses/:businessId/diversity_metrics/educational_backgrounds - create diversity educational background metrics for a certain business id
--- PUT /businesses/:businessId/diversity_metrics/educational_backgrounds/:metricId - update diversity educational background metrics for a certain business id
--- DELETE /businesses/:businessId/diversity_metrics/educational_backgrounds/:metricId - delete diversity educational background metrics for a certain business id
-CREATE TABLE diversity_education_metrics (
-  id SERIAL PRIMARY KEY,
-  business_id INTEGER NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  last_updated_at TIMESTAMP DEFAULT NOW(),
-  less_than_high_school_count INTEGER NOT NULL,
-  high_school_only_count INTEGER NOT NULL,
-  some_college_count INTEGER NOT NULL,
-  associate_degree_count INTEGER NOT NULL,
-  bachelor_degree_count INTEGER NOT NULL,
-  masters_degree_and_above_count INTEGER NOT NULL,
-  FOREIGN KEY (business_id) REFERENCES businesses(id)
-);
-
--- Marital/Families Status (Single without kids, Single with Kids, Married without kids, Married with Kids)
--- As a user, I would like to see how businesses hire based on marital/families status
--- As a business, I would like to self-report how we're doing with respect to hiring people with different marital/families statuses
--- GET /businesses/:businessId/diversity_metrics/marital_families - get diversity marital families metrics for a certain business id
--- POST /businesses/:businessId/diversity_metrics/marital_families - create diversity marital families metrics for a certain business id
--- PUT /businesses/:businessId/diversity_metrics/marital_families/:metricId - update diversity marital families metrics for a certain business id
--- DELETE /businesses/:businessId/diversity_metrics/marital_families/:metricId - delete diversity marital families metrics for a certain business id
-CREATE TABLE diversity_marital_families_metrics (
-  id SERIAL PRIMARY KEY,
-  business_id INTEGER NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  last_updated_at TIMESTAMP DEFAULT NOW(),
-  single_without_kids_count INTEGER NOT NULL,
-  single_with_kids_count INTEGER NOT NULL,
-  married_without_kids_count INTEGER NOT NULL,
-  married_with_kids_count INTEGER NOT NULL,
-  FOREIGN KEY (business_id) REFERENCES businesses(id)
-);
+-- Paid time off for maternal and paternity leave
+-- Pay equality for men and women i.e. average pay for men and women
+-- Healthcare access? birth control, other issues
+-- * Average pay gap percentage between men and women
+-- * Employ veterans? Percentage of employees that are veterans
+-- * Employ disabled workers? Percentage of employees that are disabled
+-- * Percentage of gender breakdown
+-- * Support lgbtiq+
+-- * Race/ethnicities percentage breakdown
+-- * Management race/ethnicities percentage breakdown
 
 -- Veterans vs Not Veterans
 -- As a user, I would like to see how businesses are doing with respect to hiring veterans
@@ -179,13 +152,14 @@ CREATE TABLE diversity_marital_families_metrics (
 -- POST /businesses/:businessId/diversity_metrics/veterans - create diversity veterans metrics for a certain business id
 -- PUT /businesses/:businessId/diversity_metrics/veterans/:metricId - update diversity veterans metrics for a certain business id
 -- DELETE /businesses/:businessId/diversity_metrics/veterans/:metricId - delete diversity veterans metrics for a certain business id
+-- Do you currently employ veterans? Yes/no
+-- How many veterans 
 CREATE TABLE diversity_veterans_metrics (
   id SERIAL PRIMARY KEY,
   business_id INTEGER NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT NOW(),
   last_updated_at TIMESTAMP DEFAULT NOW(),
   veterans_count INTEGER NOT NULL,
-  nonveterans_count INTEGER NOT NULL,
   FOREIGN KEY (business_id) REFERENCES businesses(id)
 );
 
@@ -196,31 +170,13 @@ CREATE TABLE diversity_veterans_metrics (
 -- POST /businesses/:businessId/diversity_metrics/disabled_workers - create diversity marital families metrics for a certain business id
 -- PUT /businesses/:businessId/diversity_metrics/disabled_workers/:metricId - update diversity marital families metrics for a certain business id
 -- DELETE /businesses/:businessId/diversity_metrics/disabled_workers/:metricId - delete diversity marital families metrics for a certain business id
+-- 
 CREATE TABLE diversity_disabled_metrics (
   id SERIAL PRIMARY KEY,
   business_id INTEGER NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT NOW(),
   last_updated_at TIMESTAMP DEFAULT NOW(),
   disabled_count INTEGER NOT NULL,
-  nondisabled_count INTEGER NOT NULL,
-  FOREIGN KEY (business_id) REFERENCES businesses(id)
-);
-
--- Foreign born vs. native born
--- https://www.bls.gov/webapps/legacy/cpsatab7.htm
--- As a user, I would like to see how businesses are hiring foreign vs. native born workers
--- As a business, I would like to self-report how we're doing with hiring foreign vs. native born workers
--- GET /businesses/:businessId/diversity_metrics/foreign_workers - get diversity foreign workers metrics for a certain business id
--- POST /businesses/:businessId/diversity_metrics/foreign_workers - create diversity foreign workers metrics for a certain business id
--- PUT /businesses/:businessId/diversity_metrics/foreign_workers/:metricId - update diversity foreign workers metrics for a certain business id
--- DELETE /businesses/:businessId/diversity_metrics/foreign_workers/:metricId - delete diversity foreign workers metrics for a certain business id
-CREATE TABLE diversity_foreign_worker_metrics (
-  id SERIAL PRIMARY KEY,
-  business_id INTEGER NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  last_updated_at TIMESTAMP DEFAULT NOW(),
-  foreign_worker_count INTEGER NOT NULL,
-  native_born_count INTEGER NOT NULL,
   FOREIGN KEY (business_id) REFERENCES businesses(id)
 );
 
@@ -237,16 +193,7 @@ CREATE TABLE diversity_gender_salary_metrics (
   business_id INTEGER NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT NOW(),
   last_updated_at TIMESTAMP DEFAULT NOW(),
-  ic_junior_male_avg_salary INTEGER NOT NULL,
-  ic_junior_female_avg_salary INTEGER NOT NULL,
-  ic_mid_male_avg_salary INTEGER NOT NULL,
-  ic_mid_female_avg_salary INTEGER NOT NULL,
-  ic_senior_male_avg_salary INTEGER NOT NULL,
-  ic_senior_female_avg_salary INTEGER NOT NULL,
-  mgr_male_avg_salary INTEGER NOT NULL,
-  mgr_female_avg_salary INTEGER NOT NULL,
-  elt_male_avg_salary INTEGER NOT NULL,
-  elt_female_avg_salary INTEGER NOT NULL,
+  average_pay_gap_percentage INTEGER NOT NULL;
   FOREIGN KEY (business_id) REFERENCES businesses(id)
 );
 
@@ -262,33 +209,11 @@ CREATE TABLE diversity_gender_metrics (
   business_id INTEGER NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT NOW(),
   last_updated_at TIMESTAMP DEFAULT NOW(),
-  female_count INTEGER NOT NULL,
-  male_count INTEGER NOT NULL,
-  nonbinary_count INTEGER NOT NULL,
-  selfdescribe_count INTEGER NOT NULL,
-  private_count INTEGER NOT NULL,
-  transgender_count INTEGER NOT NULL,
+  female_percentage INTEGER NOT NULL,
+  male_percentage INTEGER NOT NULL,
+  nonbinary_percentage INTEGER NOT NULL,
+  transgender_percentage INTEGER NOT NULL,
   FOREIGN KEY (business_id) REFERENCES businesses(id),
-);
-
--- As a user, I would like to see how businesses are doing with respect to sexual orientation
--- Gender/Sexual Orientiation Survey Questions: https://www.hrc.org/resources/collecting-transgender-inclusive-gender-data-in-workplace-and-other-surveys
--- As a business, I would like to self-report and be transparent about our gender breakdowns
--- GET /businesses/:businessId/diversity_metrics/sexual_orientations - get diversity sexual orientation metrics for a certain business id
--- POST /businesses/:businessId/diversity_metrics/sexual_orientations - create diversity sexual orientation metrics for a certain business id
--- PUT /businesses/:businessId/diversity_metrics/sexual_orientations/:metricId - update diversity sexual orientation metrics for a certain business id
--- DELETE /businesses/:businessId/diversity_metrics/sexual_orientations/:metricId - delete diversity sexual orientation metrics for a certain business id
-CREATE TABLE diversity_sexual_orientation_metrics (
-  id SERIAL PRIMARY KEY,
-  business_id INTEGER NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  last_updated_at TIMESTAMP DEFAULT NOW(),
-  heterosexual_count INTEGER NOT NULL,
-  gay_count INTEGER NOT NULL,
-  bisexual_count INTEGER NOT NULL,
-  selfdescribe_count INTEGER NOT NULL,
-  private_count INTEGER NOT NULL,
-  FOREIGN KEY (business_id) REFERENCES businesses(id)
 );
 
 -- As a user, I would like to see how businesses are doing with respect to race and ethnicity
@@ -302,56 +227,13 @@ CREATE TABLE diversity_race_ethnicity_metrics (
   business_id INTEGER NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT NOW(),
   last_updated_at TIMESTAMP DEFAULT NOW(),
-  hispanic_latinx_spanish_count INTEGER NOT NULL,
-  american_indian_alaskan_count INTEGER NOT NULL,
-  asian_count INTEGER NOT NULL,
-  hawaii_pacific_islander_count INTEGER NOT NULL,
-  black_african_american_count INTEGER NOT NULL,
-  white_count INTEGER NOT NULL,
-  multiple_races_count INTEGER NOT NULL,
-  other_count INTEGER NOT NULL,
-  FOREIGN KEY (business_id) REFERENCES businesses(id)
-);
-
--- As a user, I would like to see how businesses are doing with respect to gender
--- As a business, I would like to self-report about how we're doing with respect to gender
--- GET /businesses/:businessId/diversity_metrics/elt_genders - get diversity elt gender metrics for a certain business id
--- POST /businesses/:businessId/diversity_metrics/elt_genders - create diversity elt gender metrics for a certain business id
--- PUT /businesses/:businessId/diversity_metrics/elt_genders/:metricId - update diversity elt gender metrics for a certain business id
--- DELETE /businesses/:businessId/diversity_metrics/elt_genders/:metricId - delete diversity elt gender metrics for a certain business id
-CREATE TABLE diversity_elt_gender_metrics (
-  id SERIAL PRIMARY KEY,
-  business_id INTEGER NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  last_updated_at TIMESTAMP DEFAULT NOW(),
-  female_count INTEGER NOT NULL,
-  male_count INTEGER NOT NULL,
-  nonbinary_count INTEGER NOT NULL,
-  selfdescribe_count INTEGER NOT NULL,
-  private_count INTEGER NOT NULL,
-  transgender_count INTEGER NOT NULL,
-  FOREIGN KEY (business_id) REFERENCES businesses(id)
-);
-
--- As a user, I would like to see how businesses' elt is doing with respect to race and ethnicity
--- As a business, I would like to self-report our race and ethnicity in the elt
--- GET /businesses/:businessId/diversity_metrics/elt_race_ethnicities - get diversity elt race ethnicities metrics for a certain business id
--- POST /businesses/:businessId/diversity_metrics/elt_race_ethnicities - create diversity elt race ethnicities metrics for a certain business id
--- PUT /businesses/:businessId/diversity_metrics/elt_race_ethnicities/:metricId - update diversity elt race ethnicities metrics for a certain business id
--- DELETE /businesses/:businessId/diversity_metrics/elt_race_ethnicities/:metricId - delete diversity elt race ethnicities metrics for a certain business id
-CREATE TABLE diversity_elt_race_ethnicity_metrics (
-  id SERIAL PRIMARY KEY,
-  business_id INTEGER NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  last_updated_at TIMESTAMP DEFAULT NOW(),
-  hispanic_latinx_spanish_count INTEGER NOT NULL,
-  american_indian_alaskan_count INTEGER NOT NULL,
-  asian_count INTEGER NOT NULL,
-  hawaii_pacific_islander_count INTEGER NOT NULL,
-  black_african_american_count INTEGER NOT NULL,
-  white_count INTEGER NOT NULL,
-  multiple_races_count INTEGER NOT NULL,
-  other_count INTEGER NOT NULL,
+  hispanic_latinx_spanish_percentage INTEGER NOT NULL,
+  american_indian_alaskan_percentage INTEGER NOT NULL,
+  asian_percentage INTEGER NOT NULL,
+  hawaii_pacific_islander_percentage INTEGER NOT NULL,
+  black_african_american_percentage INTEGER NOT NULL,
+  white_percentage INTEGER NOT NULL,
+  multiple_races_percentage INTEGER NOT NULL,
   FOREIGN KEY (business_id) REFERENCES businesses(id)
 );
 
@@ -366,12 +248,8 @@ CREATE TABLE diversity_management_gender_metrics (
   business_id INTEGER NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT NOW(),
   last_updated_at TIMESTAMP DEFAULT NOW(),
-  female_count INTEGER NOT NULL,
-  male_count INTEGER NOT NULL,
-  nonbinary_count INTEGER NOT NULL,
-  selfdescribe_count INTEGER NOT NULL,
-  private_count INTEGER NOT NULL,
-  transgender_count INTEGER NOT NULL,
+  male_percentage INTEGER NOT NULL,
+  female_percentage INTEGER NOT NULL,
   FOREIGN KEY (business_id) REFERENCES businesses(id)
 );
 
@@ -386,28 +264,27 @@ CREATE TABLE diversity_management_race_ethnicity_metrics (
   business_id INTEGER NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT NOW(),
   last_updated_at TIMESTAMP DEFAULT NOW(),
-  hispanic_latinx_spanish_count INTEGER NOT NULL,
-  american_indian_alaskan_count INTEGER NOT NULL,
-  asian_count INTEGER NOT NULL,
-  hawaii_pacific_islander_count INTEGER NOT NULL,
-  black_african_american_count INTEGER NOT NULL,
-  white_count INTEGER NOT NULL,
-  multiple_races_count INTEGER NOT NULL,
-  other_count INTEGER NOT NULL,
+  hispanic_latinx_spanish_percentage INTEGER NOT NULL,
+  american_indian_alaskan_percentage INTEGER NOT NULL,
+  asian_percentage INTEGER NOT NULL,
+  hawaii_pacific_islander_percentage INTEGER NOT NULL,
+  black_african_american_percentage INTEGER NOT NULL,
+  white_percentage INTEGER NOT NULL,
+  multiple_races_percentage INTEGER NOT NULL,
   FOREIGN KEY (business_id) REFERENCES businesses(id)
 );
 
 -- Industries a business/user is participating in
--- Tech, Medical, Education, Finance, Entertainment, etc.
+-- Information/Technology, Healthcare, Education, Finance, Accommodation and Food Services, etc.
 -- I want to find businesses that are in a certain industry or match up with the industry I am in
--- GET /industries - lists out all the industries businesses have declared to be part of
+-- GET /industry_sectors - lists out all the industries businesses have declared to be part of
 CREATE TABLE industries (
   id SERIAL PRIMARY KEY,
   industry_name VARCHAR(255) UNIQUE NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
 );
 
--- Businesses report what industries they participate in
+-- Businesses report what industry sectors they participate in
 -- GET /businesses/:businessId/industries
 -- POST /businesses/:businessId/industries
 -- PUT /businesses/:businessId/industries
