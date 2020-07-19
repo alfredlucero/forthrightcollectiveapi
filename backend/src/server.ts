@@ -8,10 +8,11 @@ if (!isProduction) {
     path: `./.env.${process.env.CONFIG_ENV}`,
   });
 }
+import config from "./config";
 
 import App from "./app";
 
 // Start up the backend server against the environment's PORT
-App.listen(process.env.PORT, () => {
+App.listen(config.PORT, () => {
   console.log(`Forthright API starting on port ${process.env.PORT}...`);
 });

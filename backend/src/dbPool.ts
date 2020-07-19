@@ -1,8 +1,9 @@
 import { Pool } from "pg";
+import config from "./config";
 
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = config.NODE_ENV === "production";
 
-const connectionString = `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`;
+const connectionString = `postgresql://${config.PGUSER}:${config.PGPASSWORD}@${config.PGHOST}:${config.PGPORT}/${config.PGDATABASE}`;
 
 export const pool = new Pool({
   connectionString,

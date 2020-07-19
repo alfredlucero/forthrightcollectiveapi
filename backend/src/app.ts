@@ -11,7 +11,9 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 // Routes
 import BooksRoutes from "./samplebooks/books.routes"; // For demo purposes only
-import AuthRoutes from "./auth/auth.routes";
+import AccessRoutes from "./sampleaccessroutes/access.routes";
+// Config
+import config from "./config";
 
 const App = express();
 
@@ -23,7 +25,7 @@ export const initializeMiddlewares = (app: Express): void => {
 
   // TODO: set proper CORS for production NODE_ENV
   // By default, sets Access-Control-Allow-Origin to *
-  app.use(cors());
+  app.use(cors({ origin: config.APP_ORIGIN }));
 
   // By default, compresses all responses
   app.use(compression());
@@ -46,13 +48,18 @@ export const initializeMiddlewares = (app: Express): void => {
 };
 
 const initializeRoutes = (app: Express) => {
-  // Sample Books Routes for CRUD example
-  if (process.env.NODE_ENV !== "production") {
+  if (config.NODE_ENV !== "production") {
+    // Sample Books Routes for CRUD example
     app.use(BooksRoutes.path, BooksRoutes.initializeRoutes());
+
+    // Sample Protected vs. Public Access Routes example
+    app.use(AccessRoutes.path, AccessRoutes.initializeRoutes());
   }
 
-  // /auth routes
-  app.use(AuthRoutes.path, AuthRoutes.initializeRoutes());
+  // Auth0 calls this upon successful authentication
+  app.get("/authorized", function (req, res) {
+    res.send("Secured Resource");
+  });
 
   // TODO: add more routes here
 };
